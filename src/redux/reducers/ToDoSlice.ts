@@ -11,11 +11,6 @@ export interface ITodo {
     }
 }
 
-export interface ITag {
-    id: string
-    text: string
-}
-
 export interface IToDoState {
     todos: ITodo[]
 }

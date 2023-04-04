@@ -1,0 +1,26 @@
+.tag {
+  border-radius: 20px;
+  background-color: #AAAAAA;
+  padding: 5px;
+  cursor: pointer;
+  border: 1px solid #AAAAAA;
+  transition: all .3s linear;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 3px;
+  &:hover {
+    background-color: #FFFFFF;
+  }
+
+  &__btn {
+    display: block;
+    border-radius: 50%;
+    font-size: 12px;
+    background-color: #EC7979;
+
+    &:hover {
+      background-color: #9e5555;
+    }
+  }
+}

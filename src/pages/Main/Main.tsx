@@ -7,16 +7,21 @@ import {ITodo, todoSlice} from "../../redux/reducers/ToDoSlice";
 import Button from "../../components/common-components/Button/Button";
 import TodoItem from "../../components/common-components/TodoItem/TodoItem";
 import Modal from "../../components/common-components/Modal/Modal";
+import UpdateTodo from "../../components/UpdateTodo/UpdateTodo";
+import CreateTag from "../../components/CreateTag/CreateTag";
+import TagItem from "../../components/common-components/TagItem/TagItem";
 
 const Main = () => {
 
     const dispatch = useAppDispatch()
     const { createTodo, removeTodo, updateTodo } = todoSlice.actions
     const { todos } = useAppSelector(state => state.todoReducer)
+    const { tags } = useAppSelector(state => state.tagReducer)
 
     const [todoText, setTodoText] = useState('')
     const [currentTodo, setCurrentTodo] = useState<ITodo | null>(null)
     const [isOpenModal, setIsOpenModal] = useState(false)
+    const [isOpenModalTag, setIsOpenModalTag] = useState(false)
 
     const handleCreateTodo = () => {
         const newTodo = {
@@ -29,6 +34,7 @@ const Main = () => {
             text: todoText
         }
         dispatch(createTodo(newTodo))
+        setTodoText('')
     }
 
     const handleRemoveTodo = (id: string) =>  {
@@ -64,6 +70,20 @@ const Main = () => {
                 />
                 <Button onClick={handleCreateTodo}>Создать</Button>
             </div>
+            <div className='main-tag__wrapper'>
+                <Title>Tags:</Title>
+                <div className='main-tag__list'>
+                    {tags && tags.map(tag => {
+                        return <TagItem key={tag.id} tag={tag} />
+                    })}
+                </div>
+                <Button
+                    className='main-tag__btn'
+                    onClick={() => setIsOpenModalTag(true)}
+                >
+                    Добавить
+                </Button>
+            </div>
             <div className='main-todolist__wrapper'>
                 {todos.length === 0 && <Title>Нет заметок</Title>}
                 {todos && todos.map(todo => {
@@ -77,18 +97,14 @@ const Main = () => {
                 })}
             </div>
             <Modal isOpen={isOpenModal} setIsOpen={setIsOpenModal}>
-                <Title>Обновить заметку</Title>
-                <Input
-                    type={'text'}
-                    value={currentTodo?.text}
-                    onChange={handleInputUpdate}
+                <UpdateTodo
+                    currentTodo={currentTodo}
+                    handleInputUpdate={handleInputUpdate}
+                    handleUpdateTodo={handleUpdateTodo}
                 />
-                <Button
-                    className='main-modal__btn'
-                    onClick={handleUpdateTodo}
-                >
-                    Обновить
-                </Button>
+            </Modal>
+            <Modal isOpen={isOpenModalTag} setIsOpen={setIsOpenModalTag}>
+                <CreateTag setIsOpenModal={setIsOpenModalTag} />
             </Modal>
         </div>
     );
