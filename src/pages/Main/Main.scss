@@ -1,0 +1,23 @@
+.main {
+  &-container {
+    padding: 40px;
+    border-radius: 15px;
+    background-color: #FFFFFF;
+    margin-top: 100px;
+  }
+
+  &-block {
+    width: 70%;
+    margin: 0 auto 20px;
+  }
+
+  &-todolist__wrapper {
+    max-width: 70%;
+    width: 100%;
+    margin: 0 auto;
+  }
+  &-modal__btn {
+    display: block;
+    margin: 20px auto;
+  }
+}

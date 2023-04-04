@@ -1,0 +1,25 @@
+.todo {
+  &-wrapper {
+    padding: 15px;
+    border: 2px solid #112D4E;
+    border-radius: 10px;
+    background-color: #DBE2EF;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    column-gap: 20px;
+
+  }
+  &-date {
+    font-size: 16px;
+    color: #AAAAAA;
+    margin-top: 5px;
+  }
+  &-btn-wrapper{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: 10px;
+  }
+}

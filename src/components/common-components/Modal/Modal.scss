@@ -1,0 +1,30 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: none;
+}
+
+.modal-active {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-close {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+}
+
+.modal-box {
+  display: block;
+  background: #FFFFFF;
+  padding: 45px 20px 20px;
+  border-radius: 15px;
+  min-width: 250px;
+  position: relative;
+}
