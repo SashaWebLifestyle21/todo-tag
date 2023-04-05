@@ -6,13 +6,14 @@ interface IInput {
     value?: string | number
     onChange?: (e: React.FormEvent<HTMLInputElement>) => void
     placeholder?: string
+    className?: string
 }
 
-const Input = ({ type, value, placeholder, onChange }: IInput) => {
+const Input = ({ type, value, placeholder, onChange, className }: IInput) => {
     return (
         <input
             type={type}
-            className='input'
+            className={`input ${className ? className : ''}`}
             value={value}
             onChange={onChange}
             placeholder={placeholder}

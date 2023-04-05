@@ -1,0 +1,46 @@
+.back-input {
+  background-color: #DBE2EF;
+  position: absolute;
+  z-index: 1;
+  overflow: auto;
+  pointer-events: none;
+  max-width: 90%;
+  width: 100%;
+  border-radius: 5px;
+  border: 1px solid #AAAAAA;
+  &:hover {
+    background-color: #AAAAAA;
+  }
+  &:focus {
+    outline: none;
+    border: 2px solid #112D4E;
+    background-color: #AAAAAA;
+  }
+}
+
+.highlights-input {
+  padding: 5px;
+  font-size: 18px;
+  color: transparent;
+}
+
+.input-update {
+  position: absolute;
+  z-index: 2;
+  max-width: 90%;
+  background-color: transparent;
+}
+
+mark {
+  color: transparent;
+  background-color: #EC7979;
+}
+
+.tag-list {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 5px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}

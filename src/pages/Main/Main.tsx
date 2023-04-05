@@ -11,11 +11,13 @@ import UpdateTodo from "../../components/UpdateTodo/UpdateTodo";
 import CreateTag from "../../components/CreateTag/CreateTag";
 import TagItem from "../../components/common-components/TagItem/TagItem";
 import { validateTodo } from "../../utils/validateTodo";
+import {tagSlice} from "../../redux/reducers/tagSlice";
 
 const Main = () => {
 
     const dispatch = useAppDispatch()
     const { createTodo, removeTodo, updateTodo } = todoSlice.actions
+    const { createTag } = tagSlice.actions
     const { todos } = useAppSelector(state => state.todoReducer)
     const { tags } = useAppSelector(state => state.tagReducer)
 
@@ -25,6 +27,7 @@ const Main = () => {
     const [isOpenModal, setIsOpenModal] = useState(false)
     const [isOpenModalTag, setIsOpenModalTag] = useState(false)
     const [filterTag, setFilterTag] = useState<string>('')
+    const [ newTag, setNewTag ] = useState<string[]>([])
 
     const handleCreateTodo = () => {
         if(validateTodo(todoText, todos)) {
@@ -35,7 +38,8 @@ const Main = () => {
                     month: new Date().getMonth() + 1,
                     year: new Date().getFullYear()
                 },
-                text: todoText.replace(/^ +| +$|( ) +/g,"$1")
+                text: todoText.replace(/^ +| +$|( ) +/g,"$1"),
+                tags: ''
             }
             dispatch(createTodo(newTodo))
             setTodoText('')
@@ -48,7 +52,14 @@ const Main = () => {
 
     const handleUpdateTodo = () =>  {
         if(currentTodo) {
-            dispatch(updateTodo(currentTodo))
+            const newTags = newTag.map((tag) => {
+                return {
+                    id: Date.now().toString() + tag,
+                    text: tag
+                }
+            })
+            dispatch(updateTodo({...currentTodo, tags: newTag.join(' ')}))
+            newTags.forEach(newTag => dispatch(createTag(newTag)))
         }
         setIsOpenModal(false)
     }
@@ -59,6 +70,11 @@ const Main = () => {
 
     const handleInputUpdate = (e: React.FormEvent<HTMLInputElement>) => {
         if(currentTodo) {
+            const value = e.currentTarget.value
+            let newTags = value.match(/#[a-zA-Zа-яА-ЯёЁ0-9_]+/g)
+            if(newTags) {
+                setNewTag(newTags)
+            }
             setCurrentTodo({...currentTodo, text: e.currentTarget.value})
         }
     }
@@ -68,8 +84,10 @@ const Main = () => {
     }
 
     const filteredTodoList = useMemo( () => {
-        console.log('todolist ', todoList)
-        return [...todoList].filter(todo => todo.text.includes(filterTag.slice(1)))
+        if(filterTag) {
+            return [...todoList].filter(todo => todo.tags.includes(filterTag.slice(1)))
+        }
+        return todoList
     }, [todoList, filterTag])
 
     useEffect(() => {
@@ -112,7 +130,7 @@ const Main = () => {
             <div className='main-todolist__wrapper'>
                 {todoList.length === 0
                     ? <Title>Нет заметок</Title>
-                    : filteredTodoList.map(todo => {
+                    : filteredTodoList?.map(todo => {
                         return <TodoItem
                             key={todo.id + todo.text}
                             todo={todo}
@@ -127,6 +145,9 @@ const Main = () => {
                     currentTodo={currentTodo}
                     handleInputUpdate={handleInputUpdate}
                     handleUpdateTodo={handleUpdateTodo}
+                    setNewTag={setNewTag}
+                    setCurrentTodo={setCurrentTodo}
+                    newTag={newTag}
                 />
             </Modal>
             <Modal isOpen={isOpenModalTag} setIsOpen={setIsOpenModalTag}>
