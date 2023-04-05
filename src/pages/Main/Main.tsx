@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useMemo, useState} from 'react';
 import './Main.scss'
 import Title from "../../components/common-components/Title/Title";
 import Input from "../../components/common-components/Input/Input";
@@ -10,6 +10,7 @@ import Modal from "../../components/common-components/Modal/Modal";
 import UpdateTodo from "../../components/UpdateTodo/UpdateTodo";
 import CreateTag from "../../components/CreateTag/CreateTag";
 import TagItem from "../../components/common-components/TagItem/TagItem";
+import { validateTodo } from "../../utils/validateTodo";
 
 const Main = () => {
 
@@ -18,23 +19,27 @@ const Main = () => {
     const { todos } = useAppSelector(state => state.todoReducer)
     const { tags } = useAppSelector(state => state.tagReducer)
 
+    const [todoList, setTodoList] = useState<ITodo[]>(todos)
     const [todoText, setTodoText] = useState('')
     const [currentTodo, setCurrentTodo] = useState<ITodo | null>(null)
     const [isOpenModal, setIsOpenModal] = useState(false)
     const [isOpenModalTag, setIsOpenModalTag] = useState(false)
+    const [filterTag, setFilterTag] = useState<string>('')
 
     const handleCreateTodo = () => {
-        const newTodo = {
-            id: Date.now().toString(),
-            dateCreate: {
-                day: new Date().getDay() + 2,
-                month: new Date().getMonth() + 1,
-                year: new Date().getFullYear()
-            },
-            text: todoText
+        if(validateTodo(todoText, todos)) {
+            const newTodo = {
+                id: Date.now().toString(),
+                dateCreate: {
+                    day: new Date().getDay() + 2,
+                    month: new Date().getMonth() + 1,
+                    year: new Date().getFullYear()
+                },
+                text: todoText.replace(/^ +| +$|( ) +/g,"$1")
+            }
+            dispatch(createTodo(newTodo))
+            setTodoText('')
         }
-        dispatch(createTodo(newTodo))
-        setTodoText('')
     }
 
     const handleRemoveTodo = (id: string) =>  {
@@ -58,6 +63,20 @@ const Main = () => {
         }
     }
 
+    const handleFilterTag = (tag: string) => {
+        filterTag === tag ? setFilterTag('') : setFilterTag(tag)
+    }
+
+    const filteredTodoList = useMemo( () => {
+        console.log('todolist ', todoList)
+        return [...todoList].filter(todo => todo.text.includes(filterTag.slice(1)))
+    }, [todoList, filterTag])
+
+    useEffect(() => {
+        setTodoList(todos)
+    }, [todos])
+
+
     return (
         <div className='main-container _container'>
             <Title>To Do App</Title>
@@ -74,7 +93,13 @@ const Main = () => {
                 <Title>Tags:</Title>
                 <div className='main-tag__list'>
                     {tags && tags.map(tag => {
-                        return <TagItem key={tag.id} tag={tag} />
+                        return <TagItem
+                            key={tag.id}
+                            tag={tag}
+                            handleTag={handleFilterTag}
+                            filterTag={filterTag}
+                            setFilterTag={setFilterTag}
+                        />
                     })}
                 </div>
                 <Button
@@ -85,16 +110,17 @@ const Main = () => {
                 </Button>
             </div>
             <div className='main-todolist__wrapper'>
-                {todos.length === 0 && <Title>Нет заметок</Title>}
-                {todos && todos.map(todo => {
-                    return <TodoItem
-                        key={todo.id + todo.text}
-                        todo={todo}
-                        removeTodo={handleRemoveTodo}
-                        setIsOpenModal={setIsOpenModal}
-                        setCurrentTodo={setCurrentTodo}
-                    />
-                })}
+                {todoList.length === 0
+                    ? <Title>Нет заметок</Title>
+                    : filteredTodoList.map(todo => {
+                        return <TodoItem
+                            key={todo.id + todo.text}
+                            todo={todo}
+                            removeTodo={handleRemoveTodo}
+                            setIsOpenModal={setIsOpenModal}
+                            setCurrentTodo={setCurrentTodo}
+                        />
+                    })}
             </div>
             <Modal isOpen={isOpenModal} setIsOpen={setIsOpenModal}>
                 <UpdateTodo

@@ -2,8 +2,9 @@ import React, {Dispatch, SetStateAction, useState} from 'react';
 import Title from "../common-components/Title/Title";
 import Input from "../common-components/Input/Input";
 import Button from "../common-components/Button/Button";
-import {useAppDispatch} from "../../hooks/redux";
+import {useAppDispatch, useAppSelector} from "../../hooks/redux";
 import {tagSlice} from "../../redux/reducers/tagSlice";
+import {validateTag} from "../../utils/validateTag";
 
 interface ICreateTag {
     setIsOpenModal: Dispatch<SetStateAction<boolean>>
@@ -13,6 +14,7 @@ const CreateTag = ({ setIsOpenModal }: ICreateTag) => {
 
     const dispatch = useAppDispatch()
     const { createTag } = tagSlice.actions
+    const { tags } = useAppSelector(state => state.tagReducer)
 
     const [tagText, setTagText] = useState('')
 
@@ -21,12 +23,16 @@ const CreateTag = ({ setIsOpenModal }: ICreateTag) => {
     }
 
     const handleCreateTag = () => {
-        dispatch(createTag({
+        const newTag = {
             id: Date.now().toString(),
             text: '#' + tagText
-        }))
-        setIsOpenModal(false)
-        setTagText('')
+        }
+
+        if(validateTag(newTag.text, tags)) {
+            dispatch(createTag(newTag))
+            setIsOpenModal(false)
+            setTagText('')
+        }
     }
 
     return (
